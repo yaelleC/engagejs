@@ -5,28 +5,28 @@
   var idSG = 55;
 
   describe('guestLogin', function () {
-    var dfrGuestLogin;
+    var dfrAjax;
     beforeEach(function(){
-      dfrGuestLogin = $.Deferred();
-      spyOn($, 'post').and.returnValue(dfrGuestLogin.promise());
+      dfrAjax = $.Deferred();
+      spyOn($, 'ajax').and.returnValue(dfrAjax.promise());
     });
 
     it('should call the right endpoint', function () {
       engage.guestLogin(idSG);
-      var url = $.post.calls.argsFor(0)[0];
+      var url = $.ajax.calls.argsFor(0)[0].url;
       expect(url).toContain('/SGaccess');
     });
     
     it('should pass empty username and password', function () {
       engage.guestLogin(idSG);
-      var data = $.post.calls.argsFor(0)[1];
+      var data = $.ajax.calls.argsFor(0)[0].data;
       expect(data).toEqual(
       	JSON.stringify({idSG: idSG, username: '', password: ''})
       );
   	});
 
     it('should return a Session object on success ', function () {
-        dfrGuestLogin.resolve({version: 55});      
+        dfrAjax.resolve({version: 55});      
         var session;
         engage.guestLogin(idSG).done(function(s){ session = s;});
         expect(session.version).toEqual(55);
@@ -34,14 +34,14 @@
     
     it('should return error message on failure', function () {
       var message;
-      dfrGuestLogin.reject();
+      dfrAjax.reject();
       engage.guestLogin(idSG).fail(function(msg){ message = msg;});
       expect(message).toEqual('Could not login as guest');
     });
 
     it('should fail when the game is not public', function () {
       var message;
-      dfrGuestLogin.resolve({});
+      dfrAjax.resolve({});
       engage.guestLogin(idSG).fail(function(msg){ message = msg;});
       expect(message).toEqual('Sorry this game is not public');
     });
@@ -51,18 +51,18 @@
     var dfrLoginStudent;
     beforeEach(function(){
       dfrLoginStudent = $.Deferred();
-      spyOn($, 'post').and.returnValue(dfrLoginStudent.promise());
+      spyOn($, 'ajax').and.returnValue(dfrLoginStudent.promise());
     });
 
     it('should call the right endpoint', function () {
       engage.loginStudent(idSG);
-      var url = $.post.calls.argsFor(0)[0];
+      var url = $.ajax.calls.argsFor(0)[0].url;
       expect(url).toContain('/SGaccess');
     });
     
     it('should pass empty username and password', function () {
       engage.loginStudent(idSG, 'user', 'pass');
-      var data = $.post.calls.argsFor(0)[1];
+      var data = $.ajax.calls.argsFor(0)[0].data;
       expect(data).toEqual(
         JSON.stringify({idSG: idSG, username: 'user', password: 'pass'})
       );
@@ -86,7 +86,7 @@
       var message;
       dfrLoginStudent.reject();
       engage.loginStudent(idSG).fail(function(msg){ message = msg;});
-      expect(message).toEqual('Could not login');
+      expect(message).toEqual('Connection error. Try again!');
     });
 
     it('should fail when the game is not public', function () {
@@ -98,12 +98,12 @@
   });
 
   describe('session', function () {
-    var dfrGetJSON, session;
+    var dfrGetJSON, dfrAjax, session;
     beforeEach(function(){
       // login as guest
-      var dfrGuestLogin = $.Deferred();
-      spyOn($, 'post').and.returnValue(dfrGuestLogin.promise());
-      dfrGuestLogin.resolve({
+      dfrAjax = $.Deferred();
+      spyOn($, 'ajax').and.returnValue(dfrAjax.promise());
+      dfrAjax.resolve({
         version: 33, params: []});
       engage.guestLogin(idSG).done(function(s){session=s;});
       
@@ -137,34 +137,29 @@
     });
 
     describe('startGameplay', function () {
-      var dfrStartGameplay;
-      beforeEach(function(){
-        dfrStartGameplay = $.Deferred();
-        spyOn($, 'ajax').and.returnValue(dfrStartGameplay.promise());
-      });
 
       it('should call the right endpoint', function () {
         session.startGameplay();
-        expect($.ajax.calls.argsFor(0)[0].url)
+        expect($.ajax.calls.argsFor(1)[0].url)
           .toContain('/gameplay/start');
       });
 
       it('should send the correct data new users ', function () {
         session.startGameplay();
-        expect($.ajax.calls.argsFor(0)[0].data)
+        expect($.ajax.calls.argsFor(1)[0].data)
           .toEqual(JSON.stringify({idSG: idSG, version: 33, idStudent: 0, params: []}));
       });
 
       it('should send the correct data known users ', function () {
         session.idPlayer = 15;
         session.startGameplay();
-        expect($.ajax.calls.argsFor(0)[0].data)
+        expect($.ajax.calls.argsFor(1)[0].data)
           .toEqual(JSON.stringify({idSG: idSG, version: 33, idPlayer: 15}));
       });
 
       it('should return a gameplay', function () {
         var idGamePlay = 88;
-        dfrStartGameplay.resolve(idGamePlay);
+        dfrAjax.resolve(idGamePlay);
         dfrGetJSON.resolve([1,2,3]);
         
         var gameplay;
@@ -177,24 +172,22 @@
     describe('Gameplay', function () {
       var gameplay;
       beforeEach(function(){
-        var dfrStartGameplay = $.Deferred();
-        spyOn($, 'ajax').and.returnValue(dfrStartGameplay.promise());
         var idGamePlay = 88;
         dfrGetJSON.resolve([1,2,3]);
         session.startGameplay().done(function(gp){ gameplay = gp;});
-        dfrStartGameplay.resolve(idGamePlay);
+        dfrAjax.resolve(idGamePlay);
       });
 
       describe('Assess', function () {
         it('should call the right endpoint', function () {
           gameplay.assess('hello', 'world');
-          expect($.ajax.calls.argsFor(1)[0].url)
+          expect($.ajax.calls.argsFor(2)[0].url)
             .toContain('/gameplay/88/assessAndScore');
         });
 
         it('should send action and value as PUT', function () {
           gameplay.assess('hello', 'world');
-          expect($.ajax.calls.argsFor(1)[0].data)
+          expect($.ajax.calls.argsFor(2)[0].data)
             .toEqual(JSON.stringify({action: 'hello', value: 'world'}));
         });
       });
@@ -202,12 +195,12 @@
       describe('endGameplay', function () {
         it('should call the right endpoint on win', function () {
           gameplay.endGameplay(true);
-          expect($.ajax.calls.argsFor(1)[0].url)
+          expect($.ajax.calls.argsFor(2)[0].url)
             .toContain('/gameplay/88/end/win');
         });
         it('should call the right endpoint on lose', function () {
           gameplay.endGameplay(false);
-          expect($.ajax.calls.argsFor(1)[0].url)
+          expect($.ajax.calls.argsFor(2)[0].url)
             .toContain('/gameplay/88/end/lose');
         });
 
@@ -215,14 +208,14 @@
       describe('getFeedback', function () {
         it('should call the right endpoint', function () {
           gameplay.getFeedback();
-          expect($.getJSON.calls.argsFor(1)[0])
+          expect($.getJSON.calls.argsFor(2)[0])
             .toContain('/gameplay/88/feedback');
         });
       });
       describe('getScores', function () {
         it('should call the right endpoint', function () {
           gameplay.getScores();
-          expect($.getJSON.calls.argsFor(1)[0])
+          expect($.getJSON.calls.argsFor(2)[0])
             .toContain('/gameplay/88/scores');
         });
       });

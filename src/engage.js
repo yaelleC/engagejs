@@ -32,7 +32,7 @@ window.engage = (function ($) {
                 }
                 dfr.resolve(new Session(idSG, data));
             })
-            .fail(function () {dfr.reject('Could not login');});
+            .fail(function () {dfr.reject('Connection error. Try again!');});
         return dfr.promise();
 	};
 
@@ -41,7 +41,7 @@ window.engage = (function ($) {
 		var url = baseURL + '/SGaccess/';
     	var data = {idSG: idSG, username: '', password: ''};
      
-    	$.post(url, JSON.stringify(data), null,'json')
+        $.ajax({url: url, type:'POST', data: JSON.stringify(data), contentType:"application/json;", dataType: 'json'})
             .done(function (data) {
                 if (!data.hasOwnProperty('version')) {
                     dfr.reject('Sorry this game is not public');
@@ -87,7 +87,7 @@ window.engage = (function ($) {
                 idPlayer: this.idPlayer
             };
         }
-        $.ajax({url: url, method: "PUT", data: JSON.stringify(data) })
+        $.ajax({url: url, method: "PUT", contentType:"application/json;", data: JSON.stringify(data) })
             .done(function (idGameplay) {
                 var scoresUrl = baseURL + '/gameplay/' + idGameplay + '/scores';
                 $.getJSON(scoresUrl)
@@ -108,13 +108,13 @@ window.engage = (function ($) {
     GamePlay.prototype.assess = function (action, value) {
         var url = baseURL + '/gameplay/' + this.idGameplay + '/assessAndScore';
         var data = {action: action, value: value};
-        return $.ajax({url: url, method: "PUT", data: JSON.stringify(data) });
+        return $.ajax({url: url, method: "PUT", contentType:"application/json;", data: JSON.stringify(data) });
     };
 
     GamePlay.prototype.endGameplay = function (win) {
         var end = win ? 'win' : 'lose';
         var url = baseURL + '/gameplay/' + this.idGameplay + '/end/' + end;        
-        return $.ajax({url: url, method: "POST"});
+        return $.ajax({url: url, method: "POST", contentType:"application/json;"});
     };
 
     GamePlay.prototype.getFeedback = function () {
