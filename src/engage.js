@@ -22,7 +22,7 @@ window.engage = (function ($) {
         var url = baseURL + '/SGaccess/';
         var data = {idSG: idSG, username: username, password: password};
      
-        $.post(url, JSON.stringify(data), null,'json')
+        $.ajax({url: url, type:'POST', data: JSON.stringify(data), contentType:"application/json;", dataType: 'json'})
             .done(function (data) {
                 if (!data.loginSuccess) {
                     dfr.reject('Login failed');

@@ -1,4 +1,4 @@
-/*! engage - v0.9.0 - 2015-10-06
+/*! engage - v0.9.0 - 2015-10-08
 * Copyright (c) 2015 ; Licensed MIT */
 window.engage = (function ($) {
 
@@ -24,7 +24,7 @@ window.engage = (function ($) {
         var url = baseURL + '/SGaccess/';
         var data = {idSG: idSG, username: username, password: password};
      
-        $.post(url, JSON.stringify(data), null,'json')
+        $.ajax({url: url, type:'POST', data: JSON.stringify(data), contentType:"application/json;", dataType: 'json'})
             .done(function (data) {
                 if (!data.loginSuccess) {
                     dfr.reject('Login failed');
