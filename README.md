@@ -21,7 +21,7 @@ engage.loginGuest(idSG)
     });
 
 // atlernatively, login as student
-engage.studentLogin(idSG)
+engage.loginStudent(idSG, username, password)
     .done(function(s){ session=s;})
     .fail(function(msg){ /*todo*/});
 
