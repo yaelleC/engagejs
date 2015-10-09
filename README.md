@@ -12,7 +12,7 @@ var idSG = 1234;
 
 // Start a session
 var session;
-engage.loginGuest(idSG)
+engage.guestLogin(idSG)
     // what do do on success
     .done(function(s){ session=s;})
     // what to do on failure
@@ -31,8 +31,16 @@ session.getLeaderboard()
         console.log(leaderboard);
     });
 
+// to get only badges won
 session.getBadgesWon().done(
     function(badges){
+        console.log(badges);
+    });
+
+// to get list of all badges (with boolean earned)
+session.getBadges().done(
+    function(badges){
+        menu.createPanelBadges(badges);
         console.log(badges);
     });
 
