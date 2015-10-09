@@ -59,13 +59,13 @@ window.engage = (function ($) {
         return $.getJSON(url);
     };  
 
-    Session.prototype.getGameDesc = function () {
-    	var url = baseURL + '/seriousgame/' + this.idSG + "/version/" + this.version;
-    	return $.getJSON(url);
-    };
-
     Session.prototype.getBadgesWon = function () {
         var url = baseURL + '/badges/seriousgame/' + this.idSG + '/version/' + this.version + '/player/' + this.idPlayer;
+        return $.getJSON(url);
+    };
+
+    Session.prototype.getBadges = function () {
+        var url = baseURL + '/badges/all/seriousgame/' + this.idSG + '/version/' + this.version + '/player/' + this.idPlayer;
         return $.getJSON(url);
     };
 
