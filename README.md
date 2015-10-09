@@ -30,6 +30,12 @@ session.getLeaderboard()
     .done(function(leaderboard){
         console.log(leaderboard);
     });
+    
+// to get a specific number of results
+session.getLeaderboard(5)
+    .done(function(leaderboard){
+        console.log(leaderboard);
+    });
 
 // to get only badges won
 session.getBadgesWon().done(
