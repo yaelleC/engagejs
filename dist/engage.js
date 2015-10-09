@@ -124,7 +124,7 @@ window.engage = (function ($) {
 
     GamePlay.prototype.assess = function (action, value) {
         var url = baseURL + '/gameplay/' + this.idGameplay + '/assessAndScore';
-        var data = {action: action, value: value};
+        var data = {action: action, values: value};
         return $.ajax({url: url, method: "PUT", contentType:"application/json;", data: JSON.stringify(data) });
     };
 
