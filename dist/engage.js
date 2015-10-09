@@ -59,6 +59,11 @@ window.engage = (function ($) {
         return $.getJSON(url);
     };  
 
+    Session.prototype.getLeaderboard = function (limit) {
+        var url = baseURL + '/learninganalytics/leaderboard/'+limit+'/seriousgame/' + this.idSG + '/version/' + this.version;
+        return $.getJSON(url);
+    };  
+
     Session.prototype.getBadgesWon = function () {
         var url = baseURL + '/badges/seriousgame/' + this.idSG + '/version/' + this.version + '/player/' + this.idPlayer;
         return $.getJSON(url);
