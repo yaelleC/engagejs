@@ -56,7 +56,7 @@ session.getGameDesc().done(
     });
 
 var gameplay;
-session.startGamePlay()
+session.startGameplay()
     .done(function(gp){ gameplay = gp;})
     .fail(function(msg){ console.log(msg);})
 
