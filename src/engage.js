@@ -1,3 +1,5 @@
+/*! engage - v0.9.0 - 2015-10-08
+* Copyright (c) 2015 ; Licensed MIT */
 window.engage = (function ($) {
 
 	var baseURL = 'http://146.191.107.189:8080';
@@ -57,13 +59,28 @@ window.engage = (function ($) {
         return $.getJSON(url);
     };  
 
+    Session.prototype.getLeaderboard = function (limit) {
+        var url = baseURL + '/learninganalytics/leaderboard/'+limit+'/seriousgame/' + this.idSG + '/version/' + this.version;
+        return $.getJSON(url);
+    };  
+
     Session.prototype.getGameDesc = function () {
+    	var url = baseURL + '/seriousgame/info/' + this.idSG + "/version/" + this.version;
+    	return $.getJSON(url);
+    };
+
+    Session.prototype.getGame = function () {
     	var url = baseURL + '/seriousgame/' + this.idSG + "/version/" + this.version;
     	return $.getJSON(url);
     };
 
     Session.prototype.getBadgesWon = function () {
         var url = baseURL + '/badges/seriousgame/' + this.idSG + '/version/' + this.version + '/player/' + this.idPlayer;
+        return $.getJSON(url);
+    };
+
+    Session.prototype.getBadges = function () {
+        var url = baseURL + '/badges/all/seriousgame/' + this.idSG + '/version/' + this.version + '/player/' + this.idPlayer;
         return $.getJSON(url);
     };
 
@@ -107,7 +124,7 @@ window.engage = (function ($) {
 
     GamePlay.prototype.assess = function (action, value) {
         var url = baseURL + '/gameplay/' + this.idGameplay + '/assessAndScore';
-        var data = {action: action, value: value};
+        var data = {action: action, values: value};
         return $.ajax({url: url, method: "PUT", contentType:"application/json;", data: JSON.stringify(data) });
     };
 
